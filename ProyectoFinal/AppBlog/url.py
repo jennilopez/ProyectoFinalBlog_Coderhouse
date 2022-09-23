@@ -8,6 +8,6 @@ urlpatterns = [
     path('buscarCategoria/', buscarCateg, name='buscarCategoria'),
     path('buscar/', buscarCategoria),
     path('publicaciones/', PublicacionLista.as_view()),
-    path('publicaciones/nueva', PublicacionCrear.as_view()),
+    path('publicaciones/nueva', PublicacionCrear.as_view(), name='crearPublicacion'),
     path('mensaje/nuevo', MensajeCrear.as_view()),
 ]
