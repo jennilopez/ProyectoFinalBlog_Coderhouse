@@ -1,0 +1,22 @@
+{% extends 'AppBlog/padre.html' %}
+
+{% load static%}
+
+{% block titulo %}
+    Publicaciones
+{% endblock %}
+
+{% block contenido %}
+
+
+    {% for pub in object_list %}
+        <ul>
+            <li>{{pub.titulo}}</li>
+            <li>{{pub.imagen}}</li>
+            <li>{{pub.fecha}}</li>
+            <li>{{pub.cuerpo}}</li>
+        </ul>
+    {% endfor %}
+
+
+{% endblock %}

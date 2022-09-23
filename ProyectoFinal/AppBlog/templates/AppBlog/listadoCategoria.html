@@ -1,0 +1,23 @@
+{% extends 'AppBlog/padre.html' %}
+
+{% load static%}
+
+{% block titulo %}
+    {{titulo}}
+{% endblock %}
+
+{% block contenido %}
+
+    <button>
+        <a href="{% url 'buscarCategoria'%}">Buscar categoría</a>
+    </button>
+
+    <ul>
+        {% for categ in categs %}
+            <li>{{categ.nombre}}</li>
+        {% endfor %}
+    </ul>
+
+    <a href="{% url 'crearCategoria' %}">Agregar categoría</a>
+
+{% endblock %}
