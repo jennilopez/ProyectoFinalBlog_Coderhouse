@@ -36,6 +36,10 @@
                         {% block titulo %}
                         {% endblock %}
                     </h1>
+                    <p>
+                        {% block mensaje %}
+                        {% endblock %}
+                    </p>
                 </div>
             </div>
         </header>
@@ -75,6 +79,13 @@
                             <div class="row">
                                 <div class="col-sm-6">
                                     <ul class="list-unstyled mb-0">
+                                        {% comment %} {% with categoria as cats %}
+                                            {% if cats %}
+                                                {% for c in cats%}
+                                                    <li><a href="#!">{{c}}</a></li>
+                                                {% endfor %}
+                                            {% endif %}
+                                        {% endwith %} {% endcomment %}
                                         <li><a href="#!">Web Design</a></li>
                                         <li><a href="#!">HTML</a></li>
                                         <li><a href="#!">Freebies</a></li>

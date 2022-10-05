@@ -1,5 +1,8 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView
 from django.views.generic.edit import CreateView
 from AppBlog.models import *
@@ -7,6 +10,36 @@ from AppBlog.forms import *
 
 def inicio(request):
     return render(request, 'AppBlog/inicio.html')
+
+
+def registroUsuario(request):
+
+    if request.method=="POST":
+        form = FormRegistroUsuario(request.POST)
+        if form.is_valid():
+            nombreUsuario = form.cleaned_data["username"]
+            form.save()
+            return render(request, "AppBlog/inicio.html", {"mensaje": f"Bienvenido @{nombreUsuario}!!"})
+    else:
+        form = FormRegistroUsuario()
+    
+    return render(request, "AppBlog/usuario.html", {"form":form, 'titulo':'Registro de usuario', 'submit':'Registrarse'})
+
+
+def iniciarSesion(request):
+
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            usuario = form.cleaned_data.get('username')
+            contra = form.cleaned_data.get('password')
+            user = authenticate(username=usuario, password=contra)
+            if user:
+                login(request, user)
+                return render(request, 'AppBlog/inicio.html', {'mensaje':f'Hola {user}'})
+    else:
+        form = AuthenticationForm()
+    return render(request, 'AppBlog/usuario.html', {'form':form, 'titulo':'Iniciar sesión', 'submit':'Iniciar sesión'})
 
 
 def listarCategorias(request):
