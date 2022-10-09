@@ -7,6 +7,8 @@ urlpatterns = [
     path('', inicio, name='inicio'),
     path('registro', registroUsuario, name='registro'),
     path('login', iniciarSesion, name='login'),
+    path('perfilUsuario', perfilUsario, name='perfilUsuario'),
+    path('editarUsuario', editarUsuario, name='editarUsuario'),
     path('logout', LogoutView.as_view(template_name='AppBlog/inicio.html'), name = 'logout'),
     path('categorias/', listarCategorias, name='listarCategorias'),
     path('crearCategoria/', crearCategoria, name='crearCategoria'),

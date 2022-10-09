@@ -29,6 +29,7 @@ def registroUsuario(request):
 def iniciarSesion(request):
 
     if request.method == 'POST':
+
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
             usuario = form.cleaned_data.get('username')
@@ -39,7 +40,50 @@ def iniciarSesion(request):
                 return render(request, 'AppBlog/inicio.html', {'mensaje':f'Hola {user}'})
     else:
         form = AuthenticationForm()
+
     return render(request, 'AppBlog/usuario.html', {'form':form, 'titulo':'Iniciar sesión', 'submit':'Iniciar sesión'})
+
+
+@login_required
+def perfilUsario(request):
+    usuario = request.user
+    perfil = usuario.userprofile
+
+    if request.method == 'POST':
+        formulario = FormEditarPerfil(request.POST, request.FILES)
+        if formulario.is_valid():
+            info = formulario.cleaned_data
+            if info['avatar']:
+                perfil.avatar = info['avatar']
+            else:
+                perfil.avatar = 'avatares/avatardefault.png'
+            perfil.biografia = info['biografia']
+            perfil.save()
+            return render(request, 'AppBlog/inicio.html')
+    else:
+        formulario = FormEditarPerfil(initial={'avatar':perfil.avatar, 'biografia':perfil.biografia})
+    contexto = {'form':formulario, 'titulo':'Mi perfil', 'submit':'Guardar'}
+    return render(request, 'AppBlog/perfil.html', contexto)
+
+
+@login_required
+def editarUsuario(request):
+    usuarioConectado = request.user
+    if request.method == 'POST':
+        formulario = FormEditarUsuario(request.POST)
+        if formulario.is_valid():
+            info = formulario.cleaned_data
+            usuarioConectado.email = info['email']
+            usuarioConectado.first_name = info['first_name']
+            usuarioConectado.last_name = info['last_name']
+            usuarioConectado.password1 = info['password1']
+            usuarioConectado.password2 = info['password2']
+            usuarioConectado.save()
+            return render(request, 'AppBlog/inicio.html')
+    else:
+        formulario = FormEditarUsuario(initial={'email':usuarioConectado.email, 'first_name':usuarioConectado.first_name, 'last_name':usuarioConectado.last_name})
+    contexto = {'form':formulario, 'usuario':usuarioConectado, 'titulo':'Editar usuario', 'submit':'Guardar'}
+    return render(request, 'AppBlog/usuario.html', contexto)
 
 
 def listarCategorias(request):
