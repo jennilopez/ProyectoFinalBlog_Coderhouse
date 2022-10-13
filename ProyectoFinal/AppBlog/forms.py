@@ -1,7 +1,8 @@
+from dataclasses import fields
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import UserProfile
+from .models import EntradaBlog, UserProfile
 
 
 class FormRegistroUsuario(UserCreationForm):
@@ -43,17 +44,10 @@ class FormEditarPerfil(forms.ModelForm):
         fields = ['avatar','biografia']
 
 
-class FormularioCategoria(forms.Form):
+class FormCrearCategoria(forms.Form):
 
     nombre = forms.CharField()
 
-
-class FormularioPublicacion(forms.Form):
-
-    titulo = forms.CharField()
-    cuerpo = forms.CharField()
-    imagen = forms.ImageField()
-    fecha = forms.DateTimeField()
 
 
 class FormularioMensaje(forms.Form):

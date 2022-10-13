@@ -1,15 +1,18 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.http import HttpResponse
 from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
-from django.views.generic import ListView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse_lazy
+from django.views.generic import ListView, DetailView, UpdateView, DeleteView
 from django.views.generic.edit import CreateView
 from AppBlog.models import *
 from AppBlog.forms import *
 
 def inicio(request):
-    return render(request, 'AppBlog/inicio.html')
+    entradas = EntradaBlog.objects.all().order_by('-fecha')[:10]
+    return render(request, 'AppBlog/inicio.html', {'entradas':entradas, 'titulo':'Bienvendio al blog'})
 
 
 def registroUsuario(request):
@@ -37,7 +40,7 @@ def iniciarSesion(request):
             user = authenticate(username=usuario, password=contra)
             if user:
                 login(request, user)
-                return render(request, 'AppBlog/inicio.html', {'mensaje':f'Hola {user}'})
+                return redirect('inicio')
     else:
         form = AuthenticationForm()
 
@@ -87,9 +90,7 @@ def editarUsuario(request):
 
 
 def listarCategorias(request):
-
     categs = Categoria.objects.all()
-
     return render(request, 'AppBlog/listadoCategoria.html', {'categs':categs,'titulo':f'Categorías'})
 
 
@@ -116,36 +117,60 @@ def buscarCategoria(request):
 def crearCategoria(request):
 
     if request.method=='POST':
-
-        form = FormularioCategoria(request.POST)
-
+        form = FormCrearCategoria(request.POST)
         if form.is_valid():
-
             info = form.cleaned_data
-
             categ = Categoria(nombre=info['nombre'])
-
             categ.save()
-
             return render(request, 'AppBlog/inicio.html')
-    
     else:
-        form = FormularioCategoria()
-    
+        form = FormCrearCategoria()
+
     return render(request, 'AppBlog/formCategoria.html', {'form':form})
 
 
-class PublicacionLista(ListView):
-    model = Publicacion
-
-
-class PublicacionCrear(CreateView):
-    model = Publicacion
+class CrearEntrada(LoginRequiredMixin, CreateView):
+    model = EntradaBlog
+    template_name = 'AppBlog/entradaBlog.html'
+    fields = ['titulo', 'subtitulo','cuerpo','imagen','categoria']
     success_url = '/AppBlog/'
-    fields = ['titulo','cuerpo','imagen','fecha'] #ver de que se creen con la fecha y hora de ahora
+    login_url = 'login'
+
+    def form_valid(self, form):
+        form.save(commit=False)
+        usuario = User.objects.get(username = self.request.user)
+        form.instance.autor = usuario
+        form.save()
+        return redirect(self.success_url)
 
 
-class MensajeCrear(CreateView): #solo para la primera entrega
-    model = Mensaje
+class EditarEntrada(LoginRequiredMixin, UpdateView):
+    model = EntradaBlog
+    template_name= 'AppBlog/entradaBlog.html'
+    fields = ['titulo', 'subtitulo','cuerpo','imagen','categoria']
     success_url = '/AppBlog/'
-    fields = ['remitente','destinatario','mensaje']
+    login_url = 'login'
+
+
+class ListaEntrada(ListView):
+    model = EntradaBlog
+    template_name = 'AppBlog/publicacion_list.html'
+
+
+def ultimasEntradas(request):
+    entradas = EntradaBlog.objects.all().order_by('-fecha')[:10]
+    return render(request, 'AppBlog/blog.html', {'entradas':entradas})
+
+@login_required
+def misEntradas(request):
+    entradas = EntradaBlog.objects.filter(autor=request.user).order_by('-fecha')
+    return render(request, 'AppBlog/listaEntradas.html', {'entradas':entradas})
+
+
+class BorrarEntrada(LoginRequiredMixin, DeleteView):
+    model = EntradaBlog
+    success_url = reverse_lazy('misEntradas')
+    login_url = 'login'
+
+class LeerEntrada(DetailView):
+    model = EntradaBlog

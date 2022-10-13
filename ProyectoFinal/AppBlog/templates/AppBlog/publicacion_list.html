@@ -12,13 +12,15 @@
     {% for pub in object_list %}
         <ul>
             <li>{{pub.titulo}}</li>
+            <li>{{pub.subtitulo}}</li>
+            <li>{{pub.cuerpo}}</li>
             <li>{{pub.imagen}}</li>
             <li>{{pub.fecha}}</li>
-            <li>{{pub.cuerpo}}</li>
+            <li>{{pub.autor}}</li>
         </ul>
     {% endfor %}
 
-    <a href="{% url 'crearPublicacion' %}">Agregar publicación</a>
+    <a href="{% url 'crearEntrada' %}">Agregar publicación</a>
 
 
 {% endblock %}

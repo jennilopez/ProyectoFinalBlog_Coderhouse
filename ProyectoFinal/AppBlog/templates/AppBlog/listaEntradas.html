@@ -1,0 +1,40 @@
+{% extends 'AppBlog/padre.html' %}
+
+{% load static%}
+
+{% block titulo %}
+    Mis entradas
+{% endblock %}
+
+{% block contenido %}
+
+
+{% for entrada in entradas %}
+
+    <div class="card mb-3">
+        <div class="row g-0">
+            <div class="col-md-4">
+                <img src="{{entrada.imagen.url}}" class="img-fluid rounded-start" alt="...">
+            </div>
+            <div class="col-md-8">
+                <div class="card-body">
+                    <h5 class="card-title">{{entrada.titulo}}</h5>
+                    <p class="card-text">{{entrada.subtitulo}}</p>
+                    <p class="card-text"><small class="text-muted">
+                            {{entrada.fecha}} por {% if not user == entrada.autor%}{{entrada.autor}}{% else %}mí{% endif %}
+                        </small></p>
+                    <a href="{% url 'leerEntrada' entrada.id %}" class="btn btn-primary btn-sm align-self-end">Ver</a>
+                    <a href="{% url 'editarEntrada' entrada.id %}" class="btn btn-primary btn-sm align-self-end">Editar</a>
+                    <a href="{% url 'borrarEntrada' entrada.id %}" class="btn btn-secondary btn-sm align-self-end">Borrar</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+{% endfor %}
+
+<a href="{% url 'crearEntrada' %}">Agregar publicación</a>
+
+
+{% endblock %}

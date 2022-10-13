@@ -18,15 +18,15 @@
     <!-- Responsive navbar-->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-            <a class="navbar-brand" href="#!">Blog</a>
+            <a class="navbar-brand" href="{% url 'inicio' %}">Blog</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
                 aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
             <div class="collapse navbar-collapse justify-content-between" id="navbarText">
                 <ul class="navbar-nav mr-auto">
-                    <li class="nav-item active"><a class="nav-link" href="#">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Features</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Pricing</a></li>
+                    <li class="nav-item active"><a class="nav-link" href="{% url 'inicio' %}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Buscar</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">About</a></li>
                 </ul>
                 <div class="d-flex justify-content-between align-items-center">     
                     {% if request.user.is_authenticated %}
@@ -43,6 +43,8 @@
                                 </a>
                                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                     <li><a class="dropdown-item" href="{% url 'perfilUsuario' %}">Mi Perfil</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'crearEntrada' %}">Escribir entrada</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'misEntradas' %}">Ver mis entradas</a></li>
                                     <li><a class="dropdown-item" href="#">Another action</a></li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li><a class="dropdown-item" href="{% url 'logout' %}">Cerrar sesión</a></li>
@@ -80,44 +82,36 @@
             <!-- Blog entries-->
             <div class="col-lg-8">
                 <!-- Featured blog post-->
-                <div class="card mb-4">
+
                     {% block contenido %}
                     {% endblock %}
-                </div>
-                <!-- Nested row for non-featured blog posts-->
-                <div class="row">
-                    <div class="col-lg-6">
 
-                    </div>
-                </div>
+                <!-- Nested row for non-featured blog posts-->
             </div>
             <!-- Side widgets-->
             <div class="col-lg-4">
                 <!-- Search widget-->
                 <div class="card mb-4">
-                    <div class="card-header">Search</div>
+                    <div class="card-header">Buscar entrada</div>
                     <div class="card-body">
-                        <div class="input-group">
-                            <input class="form-control" type="text" placeholder="Enter search term..."
-                                aria-label="Enter search term..." aria-describedby="button-search" />
-                            <button class="btn btn-primary" id="button-search" type="button">Go!</button>
-                        </div>
+                        <form action="/AppBlog/buscar/" method="GET" class="input-group"> {% csrf_token %}
+                            <input class="form-control" type="text" placeholder="Tips sobre..." aria-label="Tips sobre..." aria-describedby="button-search" name="nombre" id="nombre"/>
+                            <input type="submit" value="&#8594;" class="btn btn-primary">
+                        </form>
                     </div>
                 </div>
                 <!-- Categories widget-->
                 <div class="card mb-4">
-                    <div class="card-header">Categories</div>
+                    <div class="card-header">Categorias</div>
                     <div class="card-body">
                         <div class="row">
                             <div class="col-sm-6">
                                 <ul class="list-unstyled mb-0">
-                                    {% comment %} {% with categoria as cats %}
-                                    {% if cats %}
+                                    {% with cats=categoria%}
                                     {% for c in cats%}
                                     <li><a href="#!">{{c}}</a></li>
                                     {% endfor %}
-                                    {% endif %}
-                                    {% endwith %} {% endcomment %}
+                                    {% endwith %}
                                     <li><a href="#!">Web Design</a></li>
                                     <li><a href="#!">HTML</a></li>
                                     <li><a href="#!">Freebies</a></li>
@@ -135,9 +129,8 @@
                 </div>
                 <!-- Side widget-->
                 <div class="card mb-4">
-                    <div class="card-header">Side Widget</div>
-                    <div class="card-body">You can put anything you want inside of these side widgets. They are easy to
-                        use, and feature the Bootstrap 5 card component!</div>
+                    <div class="card-header">¿Querés crear entradas?</div>
+                    <div class="card-body">Podes ser parte de nuestra comunidad de blogueros <a href="{% url 'registro' %}">registrandote aquí</a>, o si ya tenes usuario <a href="{% url 'login' %}">inicia sesión</a>!</div>
                 </div>
             </div>
         </div>
