@@ -13,38 +13,80 @@
 
 {% block contenido %}
 
-    <div class="card mb-4">
-        <a href="#!"><img class="card-img-top" src="{{entradas.0.imagen.url}}" alt="..." /></a>
-        <div class="card-body">
-            <div class="small text-muted">{{entradas.0.fecha}}2</div>
-            <h2 class="card-title">{{entradas.0.titulo}}</h2>
-            <p class="card-text">{{entradas.0.subtitulo}}</p>
-        <a class="btn btn-primary" href="{% url 'leerEntrada' entradas.0.id %}">Leer →</a>
+    <div class="col-lg-8">
+
+        <div class="card mb-4">
+            <a href="#!"><img class="card-img-top" src="{{entradas.0.imagen.url}}" alt="..." /></a>
+            <div class="card-body">
+                <div class="small text-muted">{{entradas.0.fecha|date:"d M Y"}}</div>
+                <h2 class="card-title">{{entradas.0.titulo}}</h2>
+                <p class="card-text">{{entradas.0.subtitulo}}</p>
+            <a class="btn btn-primary" href="{% url 'leerEntrada' entradas.0.id %}">Leer →</a>
+            </div>
         </div>
-    </div>
 
-    <div class="row">
+        <div class="row">
 
-        <div class="row row-cols-1 row-cols-md-3 g-4">
-            
-            {% for entrada in entradas %}
-                {% if not forloop.counter == 1 %}
-                <div class="col">
-                    <div class="card mb-4">
-                        <a href="#!"><img class="card-img-top" src="{{entrada.imagen.url}}" alt="..." /></a>
-                        <div class="card-body">
-                            <div class="small text-muted">{{entrada.fecha}}</div>
-                            <h2 class="card-title h4">{{entrada.titulo}}</h2>
-                            <p class="card-text">{{entrada.subtitulo}}</p>
-                            <a class="btn btn-primary" href="{% url 'leerEntrada' entrada.id %}">Leer →</a>
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                
+                {% for entrada in entradas %}
+                    {% if not forloop.counter == 1 %}
+                    <div class="col">
+                        <div class="card mb-4">
+                            <a href="#!"><img class="card-img-top" src="{{entrada.imagen.url}}" alt="..." /></a>
+                            <div class="card-body">
+                                <div class="small text-muted">{{entrada.fecha|date:"d M Y"}}</div>
+                                <h2 class="card-title h4">{{entrada.titulo}}</h2>
+                                <p class="card-text">{{entrada.subtitulo}}</p>
+                                <a class="btn btn-primary" href="{% url 'leerEntrada' entrada.id %}">Leer →</a>
+                            </div>
                         </div>
-                    </div>
-                </div> 
-                {% endif %}                           
-            {% endfor %}
+                    </div> 
+                    {% endif %}                           
+                {% endfor %}
 
+            </div>
         </div>
+        
     </div>
 
+    <div class="col-lg-4">
+        <!-- Search widget-->
+        <div class="card mb-4">
+            <div class="card-header">Buscar entrada</div>
+            <div class="card-body">
+                <form action="/AppBlog/buscarEntrada/" method="GET" class="input-group"> {% csrf_token %}
+                    <input class="form-control" type="text" placeholder="Tips sobre..." aria-label="Tips sobre..." aria-describedby="button-search" name="entrada" id="entrada" required/>
+                    <input type="submit" value="&#8594;" class="btn btn-primary">
+                </form>
+            </div>
+        </div>
+        <!-- Categories widget-->
+        <div class="card mb-4">
+            <div class="card-header">Categorias</div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <ul class="list-unstyled mb-0">
+                            {% for categoria in categorias %}
+                            <li><a href="{% url 'entradasPorCategoria' categoria.id %}">{{categoria}}</a></li>
+                            {% if forloop.counter == 3 %}
+                        </ul>
+                    </div>
+                    <div class="col-sm-6">
+                        <ul class="list-unstyled mb-0">
+                            {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Side widget-->
+        <div class="card mb-4">
+            <div class="card-header">¿Querés crear entradas?</div>
+            <div class="card-body">Podes ser parte de nuestra comunidad de blogueros <a href="{% url 'registro' %}">registrandote aquí</a>, o si ya tenes usuario <a href="{% url 'login' %}">inicia sesión</a>!</div>
+        </div>
+    </div>
 
 {% endblock %}

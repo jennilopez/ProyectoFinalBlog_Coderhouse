@@ -16,14 +16,14 @@
             <!-- Post meta content-->
             <div class="text-muted fst-italic mb-2">Posteado el {{object.fecha}} por {{object.autor.username}}</div>
             <!-- Post categories-->
-            <a class="badge bg-secondary text-decoration-none link-light" href="#!">{{object.categoria}}</a>
+            <a class="badge bg-secondary text-decoration-none link-light" href="{% url 'entradasPorCategoria' object.categoria.id %}">{{object.categoria}}</a>
         </header>
         <!-- Preview image figure-->
         <figure class="mb-4"><img class="img-fluid rounded" src="{{object.imagen.url}}" alt="..." /></figure>
         <!-- Post content-->
         <section class="mb-5">
             <h5 class="fw-bolder mb-4 mt-5">{{object.subtitulo}}</h5>
-            <p class="fs-5 mb-4">{{object.cuerpo}}</p>
+            <p class="fs-5 mb-4">{{object.cuerpo|linebreaks}}</p>
         </section>
     </article>
 

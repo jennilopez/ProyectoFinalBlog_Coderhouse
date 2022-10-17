@@ -3,38 +3,50 @@
 {% load static%}
 
 {% block titulo %}
-    Mis entradas
+    {{titulo}}
+{% endblock %}
+
+{% block mensaje %}
+    {{mensaje}}
 {% endblock %}
 
 {% block contenido %}
 
+    {% for entrada in entradas %}
 
-{% for entrada in entradas %}
-
-    <div class="card mb-3">
-        <div class="row g-0">
-            <div class="col-md-4">
-                <img src="{{entrada.imagen.url}}" class="img-fluid rounded-start" alt="...">
-            </div>
-            <div class="col-md-8">
-                <div class="card-body">
-                    <h5 class="card-title">{{entrada.titulo}}</h5>
-                    <p class="card-text">{{entrada.subtitulo}}</p>
-                    <p class="card-text"><small class="text-muted">
-                            {{entrada.fecha}} por {% if not user == entrada.autor%}{{entrada.autor}}{% else %}mí{% endif %}
-                        </small></p>
-                    <a href="{% url 'leerEntrada' entrada.id %}" class="btn btn-primary btn-sm align-self-end">Ver</a>
-                    <a href="{% url 'editarEntrada' entrada.id %}" class="btn btn-primary btn-sm align-self-end">Editar</a>
-                    <a href="{% url 'borrarEntrada' entrada.id %}" class="btn btn-secondary btn-sm align-self-end">Borrar</a>
+        <div class="card mb-3">
+            <div class="row g-0">
+                <div class="col-md-4">
+                    <img src="{{entrada.imagen.url}}" class="img-fluid rounded-start" alt="...">
+                </div>
+                <div class="col-md-6">
+                    <div class="card-body">
+                        <h5 class="card-title">{{entrada.titulo}}</h5>
+                        <p class="card-text">{{entrada.subtitulo}}</p>
+                        <p class="card-text"><small class="text-muted">
+                                {{entrada.fecha}} por {% if not user == entrada.autor%}{{entrada.autor}}{% else %}mí{% endif %}
+                            </small></p>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="card-body position-absolute bottom-0 end-0">
+                        <a href="{% url 'leerEntrada' entrada.id %}" class="btn btn-primary btn-sm">Ver</a>
+                        {% if request.user.is_authenticated %}
+                        <a href="{% url 'editarEntrada' entrada.id %}" class="btn btn-primary btn-sm">Editar</a>
+                        <a href="{% url 'borrarEntrada' entrada.id %}" class="btn btn-secondary btn-sm">Borrar</a>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
+
         </div>
 
-    </div>
+    {% endfor %}
 
-{% endfor %}
-
-<a href="{% url 'crearEntrada' %}">Agregar publicación</a>
-
+    {% if request.user.is_authenticated %}
+        <div class="container p-2 d-flex justify-content-end">
+            <a href="{% url 'crearEntrada' %}" class="btn btn-primary btn-sm">Escribir entrada &#9999;</a>
+        </div>
+    {% endif %}
 
 {% endblock %}

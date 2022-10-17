@@ -1,8 +1,7 @@
-from dataclasses import fields
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import EntradaBlog, UserProfile
+from .models import UserProfile
 
 
 class FormRegistroUsuario(UserCreationForm):
@@ -47,11 +46,3 @@ class FormEditarPerfil(forms.ModelForm):
 class FormCrearCategoria(forms.Form):
 
     nombre = forms.CharField()
-
-
-
-class FormularioMensaje(forms.Form):
-
-    remitente = forms.CharField()
-    destinario = forms.CharField()
-    mensaje = forms.CharField()

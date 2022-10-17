@@ -3,20 +3,28 @@ from django.http import HttpResponse
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
+from django.utils.decorators import method_decorator
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, UpdateView, DeleteView
 from django.views.generic.edit import CreateView
+from django.db.models import Q
 from AppBlog.models import *
 from AppBlog.forms import *
 
 def inicio(request):
     entradas = EntradaBlog.objects.all().order_by('-fecha')[:10]
-    return render(request, 'AppBlog/inicio.html', {'entradas':entradas, 'titulo':'Bienvendio al blog'})
+    categorias = Categoria.objects.all().order_by('-id')[:6]
+    contexto = {'entradas':entradas, 'categorias':categorias, 'titulo':'Bienvenido al blog'}
+    return render(request, 'AppBlog/inicio.html', contexto)
+
+
+def about(request):
+    return render(request, 'AppBlog/about.html')
 
 
 def registroUsuario(request):
-
     if request.method=="POST":
         form = FormRegistroUsuario(request.POST)
         if form.is_valid():
@@ -25,14 +33,11 @@ def registroUsuario(request):
             return render(request, "AppBlog/inicio.html", {"mensaje": f"Bienvenido @{nombreUsuario}!!"})
     else:
         form = FormRegistroUsuario()
-    
     return render(request, "AppBlog/usuario.html", {"form":form, 'titulo':'Registro de usuario', 'submit':'Registrarse'})
 
 
 def iniciarSesion(request):
-
     if request.method == 'POST':
-
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
             usuario = form.cleaned_data.get('username')
@@ -43,7 +48,6 @@ def iniciarSesion(request):
                 return redirect('inicio')
     else:
         form = AuthenticationForm()
-
     return render(request, 'AppBlog/usuario.html', {'form':form, 'titulo':'Iniciar sesión', 'submit':'Iniciar sesión'})
 
 
@@ -51,7 +55,6 @@ def iniciarSesion(request):
 def perfilUsario(request):
     usuario = request.user
     perfil = usuario.userprofile
-
     if request.method == 'POST':
         formulario = FormEditarPerfil(request.POST, request.FILES)
         if formulario.is_valid():
@@ -62,7 +65,7 @@ def perfilUsario(request):
                 perfil.avatar = 'avatares/avatardefault.png'
             perfil.biografia = info['biografia']
             perfil.save()
-            return render(request, 'AppBlog/inicio.html')
+            return redirect('unicio')
     else:
         formulario = FormEditarPerfil(initial={'avatar':perfil.avatar, 'biografia':perfil.biografia})
     contexto = {'form':formulario, 'titulo':'Mi perfil', 'submit':'Guardar'}
@@ -82,7 +85,7 @@ def editarUsuario(request):
             usuarioConectado.password1 = info['password1']
             usuarioConectado.password2 = info['password2']
             usuarioConectado.save()
-            return render(request, 'AppBlog/inicio.html')
+            return redirect('inicio')
     else:
         formulario = FormEditarUsuario(initial={'email':usuarioConectado.email, 'first_name':usuarioConectado.first_name, 'last_name':usuarioConectado.last_name})
     contexto = {'form':formulario, 'usuario':usuarioConectado, 'titulo':'Editar usuario', 'submit':'Guardar'}
@@ -91,7 +94,7 @@ def editarUsuario(request):
 
 def listarCategorias(request):
     categs = Categoria.objects.all()
-    return render(request, 'AppBlog/listadoCategoria.html', {'categs':categs,'titulo':f'Categorías'})
+    return render(request, 'AppBlog/listadoCategoria.html', {'categs':categs,'titulo':'Categorías'})
 
 
 def buscarCateg(request):
@@ -99,34 +102,30 @@ def buscarCateg(request):
 
 
 def buscarCategoria(request):
-
-    if request.GET['nombre']:
-
-        busqueda = request.GET["nombre"]
-        categs = Categoria.objects.filter(nombre__icontains=busqueda)
-
-        return render(request, 'AppBlog/listadoCategoria.html', {'categs':categs,'titulo':f'Resultado de la busqueda: {busqueda}'})
-
-    else:
-        
-        mensaje = 'No enviaste datos'
-
-    return HttpResponse(mensaje)
+    if request.GET['categoria']:
+        busqueda = request.GET["categoria"]
+        categorias = Categoria.objects.filter(nombre__icontains=busqueda)
+        return render(request, 'AppBlog/listadoCategoria.html', {'categs':categorias,'titulo':f'Resultado de la busqueda: {busqueda}'})
 
 
+@staff_member_required
 def crearCategoria(request):
-
     if request.method=='POST':
         form = FormCrearCategoria(request.POST)
         if form.is_valid():
             info = form.cleaned_data
             categ = Categoria(nombre=info['nombre'])
             categ.save()
-            return render(request, 'AppBlog/inicio.html')
+            return redirect('inicio')
     else:
         form = FormCrearCategoria()
-
     return render(request, 'AppBlog/formCategoria.html', {'form':form})
+
+@method_decorator(staff_member_required, name='dispatch')
+class BorrarCategoria(DeleteView):
+    model = Categoria
+    success_url = reverse_lazy('categorias')
+    # login_url = 'login'
 
 
 class CrearEntrada(LoginRequiredMixin, CreateView):
@@ -135,7 +134,6 @@ class CrearEntrada(LoginRequiredMixin, CreateView):
     fields = ['titulo', 'subtitulo','cuerpo','imagen','categoria']
     success_url = '/AppBlog/'
     login_url = 'login'
-
     def form_valid(self, form):
         form.save(commit=False)
         usuario = User.objects.get(username = self.request.user)
@@ -157,14 +155,26 @@ class ListaEntrada(ListView):
     template_name = 'AppBlog/publicacion_list.html'
 
 
-def ultimasEntradas(request):
-    entradas = EntradaBlog.objects.all().order_by('-fecha')[:10]
-    return render(request, 'AppBlog/blog.html', {'entradas':entradas})
-
 @login_required
 def misEntradas(request):
     entradas = EntradaBlog.objects.filter(autor=request.user).order_by('-fecha')
-    return render(request, 'AppBlog/listaEntradas.html', {'entradas':entradas})
+    return render(request, 'AppBlog/listaEntradas.html', {'entradas':entradas, 'titlo':'Mis entradas'})
+
+
+def buscarEntradas(request):
+    if request.GET['entrada']:
+        busqueda = request.GET["entrada"]
+        entradas = EntradaBlog.objects.filter(Q(titulo__icontains=busqueda) | Q(subtitulo__icontains=busqueda) | Q(cuerpo__icontains=busqueda))
+        return render(request, 'AppBlog/listaEntradas.html', {'entradas':entradas,'titulo':f'Resultado de la busqueda: {busqueda}'})
+
+
+def entradasPorCategoria(request, id):
+    categoria = Categoria.objects.get(id=id)
+    entradas = EntradaBlog.objects.filter(categoria=id)
+    mensaje = ''
+    if not entradas:
+        mensaje = 'No hay resultados para esta búsqueda'
+    return render(request, 'AppBlog/listaEntradas.html', {'entradas':entradas, 'titulo':f'Resultado de la busqueda: {categoria}', 'mensaje':mensaje})
 
 
 class BorrarEntrada(LoginRequiredMixin, DeleteView):
