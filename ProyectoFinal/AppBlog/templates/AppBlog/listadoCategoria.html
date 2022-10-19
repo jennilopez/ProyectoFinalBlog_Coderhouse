@@ -6,18 +6,47 @@
     {{titulo}}
 {% endblock %}
 
+{% block mensaje %}
+    {{mensaje}}
+{% endblock %}
+
 {% block contenido %}
 
-    <button>
-        <a href="{% url 'buscarCategoria'%}">Buscar categoría</a>
-    </button>
+    <div class="col-4">
+    </div>
 
-    <ul>
-        {% for categ in categs %}
-            <li>{{categ.nombre}}</li>
-        {% endfor %}
-    </ul>
+    <div class="col-4">
 
-    <a href="{% url 'crearCategoria' %}">Agregar categoría</a>
+        <form action="/AppBlog/buscarCategoria/" method="GET" class="input-group"> {% csrf_token %}
+            <input class="form-control" type="text" placeholder="Buscar categoría" aria-label="Buscar categoría" aria-describedby="button-search" name="categoria" id="categoria" required/>
+            <input type="submit" value="Buscar" class="btn btn-primary">
+        </form><br>
+
+        <table class="table">
+            <tbody>
+                {% for categoria in categs %}
+                <tr>
+                    <td><a href="{% url 'entradasPorCategoria' categoria.id %}">{{categoria}}</a></td>
+                    {% if request.user.is_staff %}
+                    <td class="d-flex flex-row-reverse">
+                        <a href="{% url 'borrarCategoria' categoria.id %}" class="btn btn-secondary btn-sm">Borrar</a>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table><br>
+
+        {% if request.user.is_staff %}
+        <div class="container p-2 d-flex justify-content-center">
+            <a href="{% url 'crearCategoria' %}" class="btn btn-primary btn-sm">Nueva categoría</a>
+        </div><br>
+        {% endif %}
+
+    </div>
+
+    <div class="col-4">
+    </div>
+    
 
 {% endblock %}

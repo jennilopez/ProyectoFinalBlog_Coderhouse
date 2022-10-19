@@ -1,0 +1,52 @@
+{% extends 'AppBlog/padre.html' %}
+
+{% load static%}
+
+{% block titulo %}
+    {{titulo}}
+{% endblock %}
+
+{% block mensaje %}
+    {{mensaje}}
+{% endblock %}
+
+{% block contenido %}
+
+    {% for entrada in entradas %}
+
+        <div class="card mb-3">
+            <div class="row g-0">
+                <div class="col-md-4">
+                    <img src="{{entrada.imagen.url}}" class="img-fluid rounded-start" alt="...">
+                </div>
+                <div class="col-md-6">
+                    <div class="card-body">
+                        <h5 class="card-title">{{entrada.titulo}}</h5>
+                        <p class="card-text">{{entrada.subtitulo}}</p>
+                        <p class="card-text"><small class="text-muted">
+                                {{entrada.fecha}} por {% if not user == entrada.autor %}{{entrada.autor}}{% else %}mí{% endif %}
+                            </small></p>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="card-body position-absolute bottom-0 end-0">
+                        <a href="{% url 'leerEntrada' entrada.id %}" class="btn btn-primary btn-sm">Ver</a>
+                        {% if user == entrada.autor %}
+                        <a href="{% url 'editarEntrada' entrada.id %}" class="btn btn-primary btn-sm">Editar</a>
+                        <a href="{% url 'borrarEntrada' entrada.id %}" class="btn btn-secondary btn-sm">Borrar</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    {% endfor %}
+
+    {% if request.user.is_authenticated %}
+        <div class="container p-2 d-flex justify-content-end">
+            <a href="{% url 'crearEntrada' %}" class="btn btn-primary btn-sm">Escribir entrada &#9999;</a>
+        </div>
+    {% endif %}
+
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends 'AppBlog/padre.html' %}
+
+{% load static%}
+
+{% block titulo %}
+    Cerraste sesión
+{% endblock %}
+
+{% block mensaje %}
+    <p>Te esperamos pronto</p>
+    <a href= {% url 'inicio' %} class="btn btn-primary">Ir a inicio</a>
+{% endblock %}
+

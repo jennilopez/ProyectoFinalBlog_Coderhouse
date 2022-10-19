@@ -1,0 +1,50 @@
+{% extends 'AppBlog/padre.html' %}
+
+{% load static%}
+
+{% block titulo %}
+    {{titulo}}
+{% endblock %}
+
+{% block mensaje %}
+    {{mensaje}}
+{% endblock %}
+
+
+{% block contenido %}
+
+    <div class="card mb-4">
+        <a href="#!"><img class="card-img-top" src="{{entradas.0.imagen.url}}" alt="..." /></a>
+        <div class="card-body">
+            <div class="small text-muted">{{entradas.0.fecha}}2</div>
+            <h2 class="card-title">{{entradas.0.titulo}}</h2>
+            <p class="card-text">{{entradas.0.subtitulo}}</p>
+        <a class="btn btn-primary" href="{% url 'leerEntrada' entradas.0.id %}">Leer →</a>
+        </div>
+    </div>
+
+    <div class="row">
+
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            
+            {% for entrada in entradas %}
+                {% if not forloop.counter == 1 %}
+                <div class="col">
+                    <div class="card mb-4">
+                        <a href="#!"><img class="card-img-top" src="{{entrada.imagen.url}}" alt="..." /></a>
+                        <div class="card-body">
+                            <div class="small text-muted">{{entrada.fecha}}</div>
+                            <h2 class="card-title h4">{{entrada.titulo}}</h2>
+                            <p class="card-text">{{entrada.subtitulo}}</p>
+                            <a class="btn btn-primary" href="{% url 'leerEntrada' entrada.id %}">Leer →</a>
+                        </div>
+                    </div>
+                </div> 
+                {% endif %}                           
+            {% endfor %}
+
+        </div>
+    </div>
+
+
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends 'AppBlog/padre.html' %}
+
+{% load static%}
+
+{% block titulo %}
+    Borrar
+{% endblock %}
+
+{% block contenido %}
+
+    <form method="POST" class="text-center"> {% csrf_token %}
+        <div class = "row"><p>¿Estás seguro que deseas borrar esta entrada?</div>
+        <input class="btn btn-primary" type="submit" value="Sí, borrar">
+        <button onclick="window.history.back();" class="btn btn-secondary" type="button">Cancelar</button>
+    </form>
+
+{% endblock %}
