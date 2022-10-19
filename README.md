@@ -1,27 +1,9 @@
 # ProyectoFinalBlog_Coderhouse
 
-SUPER USUARIO
-username: admin
-password: admin
+Aplicación web tipo blog creado por Jennifer López Fleitas para la entrega final del curso de Python-Django de CoderHouse.
 
---
+El sitio web permite a los invitados (usuarios no logueados) leer entradas de blog y realizar búsquedas por su contenido y categoría.
 
-Para ingresar a Categorías:
+Además permite la creación de usuarios. Estos pueden crear, editar y borrar entradas de blog, además de los permisos de los usuarios invitados.
 
-http://localhost:8000/AppBlog/categorias/
-
-Ahí lista todas las categorías que existen, da la opción de Buscar una categoría y de agregar una categoría
-
---
-
-Para ingresar a Publicacion:
-
-http://localhost:8000/AppBlog/publicaciones/
-
-Ahí lista todas las publicaciones y ahí opción para agregar una nueva
-
---
-
-Para ingregar un nuevo Mensaje:
-
-http://localhost:8000/AppBlog/mensaje/nuevo
+Por último, el/los administrador/es, además de los permisos mencionados anteriormente, puede administrar las categorías.

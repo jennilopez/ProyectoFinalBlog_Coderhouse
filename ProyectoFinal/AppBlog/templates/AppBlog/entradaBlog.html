@@ -1,6 +1,11 @@
 {% extends 'AppBlog/padre.html' %}
 
-{% load static%}
+{% load static %}
+
+{% block extrahead %}
+<script>window.CKEDITOR_BASEPATH = '/static/ckeditor/ckeditor/';</script>
+{{ block.super }}
+{% endblock %}
 
 {% block titulo %}
     Nueva entrada
@@ -9,8 +14,9 @@
 {% block contenido %}
 
     <form method='POST' enctype='multipart/form-data'> {% csrf_token %}
+        {{form.media}}
         <table>{{form.as_table}}</table>
-        <input type='submit' value='Guardar'></input>
+        <input type='submit' value='Guardar' class="btn btn-primary"></input>
     </form>
 
 {% endblock %}

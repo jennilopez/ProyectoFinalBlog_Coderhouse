@@ -1,7 +1,9 @@
+from enum import unique
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import UserProfile
+from django.forms import ValidationError
+from .models import UserProfile, Categoria
 
 
 class FormRegistroUsuario(UserCreationForm):
@@ -46,3 +48,9 @@ class FormEditarPerfil(forms.ModelForm):
 class FormCrearCategoria(forms.Form):
 
     nombre = forms.CharField()
+
+    def clean_nombre(self):
+        nombre = self.cleaned_data['nombre']
+        if Categoria.objects.filter(nombre=nombre).exists():
+            raise ValidationError("Ya existe esta categoría")
+        return nombre

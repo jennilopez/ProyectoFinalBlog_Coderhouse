@@ -1,5 +1,4 @@
 from django.shortcuts import redirect, render
-from django.http import HttpResponse
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
@@ -7,11 +6,12 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.utils.decorators import method_decorator
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
-from django.views.generic import ListView, DetailView, UpdateView, DeleteView
+from django.views.generic import DetailView, UpdateView, DeleteView
 from django.views.generic.edit import CreateView
 from django.db.models import Q
 from AppBlog.models import *
 from AppBlog.forms import *
+
 
 def inicio(request):
     entradas = EntradaBlog.objects.all().order_by('-fecha')[:10]
@@ -65,7 +65,7 @@ def perfilUsario(request):
                 perfil.avatar = 'avatares/avatardefault.png'
             perfil.biografia = info['biografia']
             perfil.save()
-            return redirect('unicio')
+            return redirect('inicio')
     else:
         formulario = FormEditarPerfil(initial={'avatar':perfil.avatar, 'biografia':perfil.biografia})
     contexto = {'form':formulario, 'titulo':'Mi perfil', 'submit':'Guardar'}
@@ -97,15 +97,16 @@ def listarCategorias(request):
     return render(request, 'AppBlog/listadoCategoria.html', {'categs':categs,'titulo':'Categorías'})
 
 
-def buscarCateg(request):
-    return render(request,'AppBlog/buscarCateg.html')
-
-
 def buscarCategoria(request):
-    if request.GET['categoria']:
-        busqueda = request.GET["categoria"]
+    if request.GET.get('categoria',False):
+        busqueda = request.GET['categoria']
         categorias = Categoria.objects.filter(nombre__icontains=busqueda)
-        return render(request, 'AppBlog/listadoCategoria.html', {'categs':categorias,'titulo':f'Resultado de la busqueda: {busqueda}'})
+        mensaje = ''
+        if not categorias:
+            mensaje = 'No hay resultados para esta búsqueda'
+        return render(request, 'AppBlog/listadoCategoria.html', {'categs':categorias,'titulo':f'Resultado de la busqueda: {busqueda}', 'mensaje':mensaje})
+    else:
+        return redirect('inicio')
 
 
 @staff_member_required
@@ -116,7 +117,7 @@ def crearCategoria(request):
             info = form.cleaned_data
             categ = Categoria(nombre=info['nombre'])
             categ.save()
-            return redirect('inicio')
+            return redirect('categorias')
     else:
         form = FormCrearCategoria()
     return render(request, 'AppBlog/formCategoria.html', {'form':form})
@@ -125,14 +126,13 @@ def crearCategoria(request):
 class BorrarCategoria(DeleteView):
     model = Categoria
     success_url = reverse_lazy('categorias')
-    # login_url = 'login'
 
 
 class CrearEntrada(LoginRequiredMixin, CreateView):
     model = EntradaBlog
     template_name = 'AppBlog/entradaBlog.html'
     fields = ['titulo', 'subtitulo','cuerpo','imagen','categoria']
-    success_url = '/AppBlog/'
+    success_url = '/AppBlog/misEntradas'
     login_url = 'login'
     def form_valid(self, form):
         form.save(commit=False)
@@ -150,22 +150,24 @@ class EditarEntrada(LoginRequiredMixin, UpdateView):
     login_url = 'login'
 
 
-class ListaEntrada(ListView):
-    model = EntradaBlog
-    template_name = 'AppBlog/publicacion_list.html'
+def todasLasEntradas(request):
+    entradas = EntradaBlog.objects.all().order_by('-fecha')
+    return render(request, 'AppBlog/listaEntradas.html', {'entradas':entradas, 'titulo':'Todas las entradas'})
 
 
 @login_required
 def misEntradas(request):
     entradas = EntradaBlog.objects.filter(autor=request.user).order_by('-fecha')
-    return render(request, 'AppBlog/listaEntradas.html', {'entradas':entradas, 'titlo':'Mis entradas'})
+    return render(request, 'AppBlog/listaEntradas.html', {'entradas':entradas, 'titulo':'Mis entradas'})
 
 
 def buscarEntradas(request):
-    if request.GET['entrada']:
+    if request.GET.get('entrada',False):
         busqueda = request.GET["entrada"]
         entradas = EntradaBlog.objects.filter(Q(titulo__icontains=busqueda) | Q(subtitulo__icontains=busqueda) | Q(cuerpo__icontains=busqueda))
         return render(request, 'AppBlog/listaEntradas.html', {'entradas':entradas,'titulo':f'Resultado de la busqueda: {busqueda}'})
+    else:
+        return redirect('inicio')
 
 
 def entradasPorCategoria(request, id):

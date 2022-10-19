@@ -23,7 +23,7 @@
         <!-- Post content-->
         <section class="mb-5">
             <h5 class="fw-bolder mb-4 mt-5">{{object.subtitulo}}</h5>
-            <p class="fs-5 mb-4">{{object.cuerpo|linebreaks}}</p>
+            {{object.cuerpo|safe}}
         </section>
     </article>
 

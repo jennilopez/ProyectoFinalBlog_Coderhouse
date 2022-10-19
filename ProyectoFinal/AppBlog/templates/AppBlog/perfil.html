@@ -8,27 +8,32 @@
 
 {% block contenido %}
 
-    <div class="container">
-        <div class="row">
-            <div class="col-2">            
-                {% with user.userprofile.avatar as avatar %}
-                    {% if avatar %}
-                        <img src="{{avatar.url}}" alt="Imagen perfil" style='max-width:100px'>
-                    {% endif %}
-                {% endwith %}
-            </div>
-            <div class="col-10">
-                <h5>{{user.first_name}} {{user.last_name}}</h5>
-            </div>
-        </div>
-    </div>
-    <div class="container">
-        <form method="POST" enctype='multipart/form-data'> {% csrf_token %}
-            {{form.as_p}}
-            <button type='submit'>{{submit}}</button>
-        </form>
+    <div class="col-3">
     </div>
 
-    <p class="text-center"><a href="{% url 'editarUsuario' %}">Editar datos personales</a></p>
+    <div class="col-6">
+
+        <div class="d-flex align-items-center justify-content-center">           
+            {% with user.userprofile.avatar as avatar %}
+                {% if avatar %}
+                    <img src="{{avatar.url}}" alt="Imagen perfil" style='max-width:120px; margin:1rem;'>
+                {% endif %}
+            {% endwith %}
+            <h4>{{user.first_name}} {{user.last_name}}</h4>
+        </div>
+        
+        <div class="container">
+            <form method="POST" enctype='multipart/form-data'> {% csrf_token %}
+                {{form.as_p}}
+                <button type='submit' class="btn btn-primary">{{submit}}</button>
+            </form>
+        </div>
+
+    </div>
+
+    <div class="col-3">
+    </div>
+
+    <p class="text-end"><a href="{% url 'editarUsuario' %}" class="btn btn-primary btn-sm">Editar datos personales</a></p>
     
 {% endblock %}
