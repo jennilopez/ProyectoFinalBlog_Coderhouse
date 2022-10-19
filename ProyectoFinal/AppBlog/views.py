@@ -30,7 +30,7 @@ def registroUsuario(request):
         if form.is_valid():
             nombreUsuario = form.cleaned_data["username"]
             form.save()
-            return render(request, "AppBlog/inicio.html", {"mensaje": f"Bienvenido @{nombreUsuario}!!"})
+            return redirect('login')
     else:
         form = FormRegistroUsuario()
     return render(request, "AppBlog/usuario.html", {"form":form, 'titulo':'Registro de usuario', 'submit':'Registrarse'})
