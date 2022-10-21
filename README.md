@@ -29,3 +29,6 @@ REQUERIMIENTOS:
 - Django
 - Pillow
 - CKEditor
+
+#
+En hosting-> https://jennilopez.pythonanywhere.com/AppBlog/
